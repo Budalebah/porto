@@ -37,8 +37,8 @@ type PrepareCallsContext = {
 export type Mode = {
   actions: {
     addFunds: (parameters: {
-      /** Address to add funds to. */
-      address: Address.Address
+      /** Address to add funds to (optional for guest checkout). */
+      address?: Address.Address | undefined
       /** Internal properties. */
       internal: ActionsInternal
       /** Token to add funds to. */
@@ -106,6 +106,13 @@ export type Mode = {
       /** Internal properties. */
       internal: ActionsInternal
     }) => Promise<z.input<typeof RpcSchema.wallet_getCallsStatus.Response>>
+
+    getCallsHistory: (
+      parameters: RpcSchema.wallet_getCallsHistory.Parameters & {
+        /** Internal properties. */
+        internal: ActionsInternal
+      },
+    ) => Promise<RpcSchema.wallet_getCallsHistory.Response>
 
     getCapabilities: (parameters: {
       /** Chain IDs to get the capabilities for. */

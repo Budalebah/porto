@@ -156,9 +156,6 @@ export function from<
             }
 
             case 'wallet_addFunds': {
-              if (state.accounts.length === 0)
-                throw new ox_Provider.DisconnectedError()
-
               const { address, value, token } = request.params[0] ?? {}
 
               const account = address
@@ -166,12 +163,11 @@ export function from<
                     Address.isEqual(account.address, address),
                   )
                 : state.accounts[0]
-              if (!account) throw new ox_Provider.UnauthorizedError()
 
               const client = getClient()
 
               const result = await getMode().actions.addFunds({
-                address: account.address,
+                address: account?.address,
                 internal: {
                   client,
                   config,
@@ -954,6 +950,24 @@ export function from<
               return response satisfies z.input<
                 typeof Rpc.wallet_getCallsStatus.Response
               >
+            }
+
+            case 'wallet_getCallsHistory': {
+              const [parameters] = request._decoded.params ?? []
+
+              const client = getClient()
+
+              const response = await getMode().actions.getCallsHistory({
+                ...parameters,
+                internal: {
+                  client,
+                  config,
+                  request,
+                  store,
+                },
+              })
+
+              return z.encode(Rpc.wallet_getCallsHistory.Response, response)
             }
 
             case 'wallet_getCapabilities': {
